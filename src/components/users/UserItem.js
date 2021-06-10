@@ -1,8 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
 const UserItem = ({ user }) => {
-  const { login, avatar_url, html_url } = user;
+  const { login, avatar_url } = user;
+
+  const onClick = () => {};
+
   return (
     <div className="card text-center">
       <img
@@ -13,14 +17,13 @@ const UserItem = ({ user }) => {
       />
       <h3>{login}</h3>
       <div>
-        <a
-          href={html_url}
+        <Link
+          to={`/user/${login}`}
           className="btn btn-dark btn-sm my-1"
-          target="_blank"
-          rel="noreferrer"
+          onClick={onClick(login)}
         >
           More
-        </a>
+        </Link>
       </div>
     </div>
   );

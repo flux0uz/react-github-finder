@@ -1,71 +1,62 @@
-import React, { Fragment, Component } from "react";
+import React, { Fragment, useState } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import Navbar from "./components/layouts/Navbar";
 import Users from "./components/users/Users";
+import User from "./components/users/User";
 import Search from "./components/users/Search";
 import Alert from "./components/layouts/Alert";
-import axios from "axios";
+import About from "./components/pages/About";
+import GithubState from "./context/github/GithubState";
 import "./App.css";
 
-class App extends Component {
-  state = {
-    users: [],
-    loading: false,
-    alert: null,
-  };
+const App = () => {
+  const [alert, setAlert] = useState(null);
 
-  static propTypes = {
-    searchUsers: PropTypes.func,
-  };
-
-  // async componentDidMount() {
-  //   this.setState({ loading: true });
-
-  //   const res = await axios.get(
-  //     `https://api.github.com/users?client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-  //   );
-
-  //   this.setState({ users: res.data, loading: false });
-  // }
-
-  searchUsers = async (text) => {
-    this.setState({ loading: true });
-
-    const res = await axios.get(
-      `https://api.github.com/search/users?q=${text}&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`
-    );
-
-    this.setState({ users: res.data.items, loading: false });
-  };
-
-  clearUsers = () => this.setState({ users: [], loading: false });
-
-  setAlert = (msg, type) => {
-    this.setState({ alert: { msg, type } });
+  const showAlert = (msg, type) => {
+    setAlert({ msg, type });
     setTimeout(() => {
-      this.setState({ alert: null });
+      setAlert(null);
     }, 5000);
   };
 
-  render() {
-    const { users, loading, alert } = this.state;
+  return (
+    <GithubState>
+      <Router>
+        <Fragment>
+          <Navbar />
+          <div className="container">
+            {alert !== null && <Alert alert={alert} />}
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={(props) => (
+                  <Fragment>
+                    <Search showAlert={showAlert} />
+                    <Users />
+                  </Fragment>
+                )}
+              />
+              <Route path="/about" component={About} />
+              <Route
+                path="/user/:login"
+                render={(props) => (
+                  <Fragment>
+                    <User {...props} />
+                  </Fragment>
+                )}
+              />
+            </Switch>
+          </div>
+        </Fragment>
+      </Router>
+    </GithubState>
+  );
+};
 
-    return (
-      <Fragment>
-        <Navbar />
-        <div className="container">
-          {alert !== null && <Alert alert={alert} />}
-          <Search
-            searchUsers={this.searchUsers}
-            clearUsers={this.clearUsers}
-            showClear={users.length > 0 ? true : false}
-            setAlert={this.setAlert}
-          />
-          <Users loading={loading} users={users} />
-        </div>
-      </Fragment>
-    );
-  }
-}
+App.propTypes = {
+  searchUsers: PropTypes.func,
+};
 
 export default App;
