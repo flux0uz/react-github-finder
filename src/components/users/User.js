@@ -7,7 +7,7 @@ import GithubContext from "../../context/github/githubContext";
 const User = ({ match }) => {
   const githubContext = useContext(GithubContext);
 
-  const { getUser, getUserRepos, repos, loading } = githubContext;
+  const { getUser, getUserRepos, repos, loading, user } = githubContext;
 
   const {
     name,
@@ -23,7 +23,7 @@ const User = ({ match }) => {
     public_repos,
     public_gists,
     hireable,
-  } = githubContext.user;
+  } = user;
 
   useEffect(() => {
     getUser(match.params.login);

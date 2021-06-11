@@ -1,62 +1,36 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { PropTypes } from "prop-types";
 import Navbar from "./components/layouts/Navbar";
-import Users from "./components/users/Users";
-import User from "./components/users/User";
-import Search from "./components/users/Search";
-import Alert from "./components/layouts/Alert";
+import Home from "./components/pages/Home";
 import About from "./components/pages/About";
+import NotFound from "./components/pages/NotFound";
+import User from "./components/users/User";
+import Alert from "./components/layouts/Alert";
 import GithubState from "./context/github/GithubState";
+import AlertState from "./context/alert/AlertState";
 import "./App.css";
 
 const App = () => {
-  const [alert, setAlert] = useState(null);
-
-  const showAlert = (msg, type) => {
-    setAlert({ msg, type });
-    setTimeout(() => {
-      setAlert(null);
-    }, 5000);
-  };
-
   return (
     <GithubState>
-      <Router>
-        <Fragment>
-          <Navbar />
-          <div className="container">
-            {alert !== null && <Alert alert={alert} />}
-            <Switch>
-              <Route
-                exact
-                path="/"
-                render={(props) => (
-                  <Fragment>
-                    <Search showAlert={showAlert} />
-                    <Users />
-                  </Fragment>
-                )}
-              />
-              <Route path="/about" component={About} />
-              <Route
-                path="/user/:login"
-                render={(props) => (
-                  <Fragment>
-                    <User {...props} />
-                  </Fragment>
-                )}
-              />
-            </Switch>
-          </div>
-        </Fragment>
-      </Router>
+      <AlertState>
+        <Router>
+          <Fragment>
+            <Navbar />
+            <div className="container">
+              <Alert />
+              <Switch>
+                <Route exact path="/" component={Home} />
+                <Route path="/about" component={About} />
+                <Route path="/user/:login" component={User} />
+                <Route component={NotFound} />
+              </Switch>
+            </div>
+          </Fragment>
+        </Router>
+      </AlertState>
     </GithubState>
   );
-};
-
-App.propTypes = {
-  searchUsers: PropTypes.func,
 };
 
 export default App;
